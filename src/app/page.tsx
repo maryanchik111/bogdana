@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Message from "./comp/message";
@@ -8,9 +8,19 @@ import Message from "./comp/message";
 export default function Home() {
   const [showMessage, setShowMessage] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleClick = () => {
     setButtonClicked(true);
+
+    // Програємо музику
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {
+        console.warn("Автоматичне відтворення заблоковано браузером");
+      });
+    }
+
     // Показуємо Message через невелику затримку,
     // щоб дочекатися завершення анімації кнопки
     setTimeout(() => setShowMessage(true), 600);
@@ -18,6 +28,9 @@ export default function Home() {
 
   return (
     <div className="relative w-full h-screen flex items-center justify-center overflow-hidden m-0 p-0">
+      {/* Аудіо-файл */}
+      <audio ref={audioRef} src="/song.mp3" preload="auto" />
+
       <AnimatePresence>
         {!buttonClicked && (
           <motion.div
